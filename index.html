@@ -15,167 +15,143 @@ body{
   overflow:hidden;
 }
 
-/* ===== INTRO ENVELOPE ===== */
-#intro{
+/* ===== SKY WITH FLOATING LETTERS ===== */
+#sky{
   position:fixed; inset:0;
-  display:flex; flex-direction:column;
-  justify-content:center; align-items:center;
-  background:radial-gradient(circle at center,#ff6ea8,#12000a);
-  text-align:center;
-  z-index:10;
+  display:flex; justify-content:center; align-items:center;
+  flex-wrap:wrap; gap:20px;
+  padding:40px;
 }
 
-#envelope{
-  width:240px; height:160px;
+.letter{
+  width:120px; height:80px;
   background:#fff;
+  border-radius:6px;
   position:relative;
-  border-radius:8px;
   cursor:pointer;
-  transition:transform .6s ease, box-shadow .6s;
+  animation:float 6s ease-in-out infinite;
 }
 
-#envelope:before{
+.letter:before{
   content:"";
-  position:absolute; left:0; right:0; top:-80px;
-  border-left:120px solid transparent;
-  border-right:120px solid transparent;
-  border-bottom:80px solid #fff;
+  position:absolute; left:0; right:0; top:-40px;
+  border-left:60px solid transparent;
+  border-right:60px solid transparent;
+  border-bottom:40px solid #fff;
 }
 
-#envelope.open{
-  transform:scale(1.1) rotateX(25deg);
-  box-shadow:0 0 40px rgba(255,255,255,.6);
+@keyframes float{
+  0%,100%{ transform:translateY(0)}
+  50%{ transform:translateY(-20px)}
 }
 
-#hint{ margin-top:20px; opacity:.85 }
-
-/* ===== MAIN CONTENT ===== */
-#main{
-  display:none;
+/* ===== POPUP CONTENT ===== */
+#popup{
   position:fixed; inset:0;
+  background:rgba(0,0,0,.8);
+  display:none;
   justify-content:center; align-items:center;
   flex-direction:column;
   text-align:center;
   padding:20px;
 }
 
-.fade{ animation:fade 1.2s ease forwards }
-@keyframes fade{ from{opacity:0; transform:translateY(30px)} to{opacity:1; transform:none} }
+.fade{ animation:fade 1s ease forwards }
+@keyframes fade{ from{opacity:0; transform:scale(.9)} to{opacity:1; transform:scale(1)} }
 
 img.photo{
   width:240px; height:240px;
   object-fit:cover;
-  border-radius:24px;
-  box-shadow:0 0 35px #ff4da6;
+  border-radius:20px;
+  box-shadow:0 0 30px #ff4da6;
 }
 
 .message{
-  margin-top:24px;
-  max-width:650px;
+  margin-top:20px;
+  max-width:600px;
   line-height:1.8;
   font-size:20px;
 }
 
-/* ===== BUTTON ===== */
 button{
-  margin-top:34px;
-  padding:14px 32px;
+  margin-top:24px;
+  padding:12px 28px;
   border:none; border-radius:999px;
   background:#ff4da6; color:#fff;
   font-size:18px;
-  box-shadow:0 0 18px #ff4da6;
 }
 
-/* ===== HEARTS ===== */
+/* HEARTS */
 #hearts{ position:fixed; inset:0; pointer-events:none }
 .heart{ position:absolute; bottom:-20px; animation:fly 6s linear forwards }
 @keyframes fly{ to{ transform:translateY(-110vh); opacity:0 } }
-
-/* ===== FIREWORK ===== */
-.fire{
-  position:absolute;
-  width:6px; height:6px;
-  background:#ff4da6;
-  border-radius:50%;
-  animation:explode 1s ease-out forwards;
-}
-
-@keyframes explode{
-  to{
-    transform:translate(var(--x), var(--y));
-    opacity:0;
-  }
-}
-
 </style>
 </head>
 
 <body>
 
-<!-- INTRO -->
-<div id="intro">
-  <div id="envelope" onclick="openLetter()"></div>
-  <div id="hint">Nhấn vào phong thư để mở 💌</div>
-</div>
+<!-- FLOATING LETTERS -->
+<div id="sky"></div>
 
-<!-- MAIN -->
-<div id="main">
-
-  <img src="nu.jpg" class="photo fade">
-
-  <div class="message fade">
-    Chúc em một năm mới thật nhiều niềm vui, sức khỏe và hạnh phúc 🌸<br><br>
-    Mong rằng trong năm mới này, chúng ta sẽ có thêm thật nhiều kỷ niệm đẹp
-    và luôn ở bên nhau, cùng nhau đi qua mọi điều trong cuộc sống 💖
-  </div>
-
-  <button onclick="startFinal()">Anh có điều muốn nói 💗</button>
-
+<!-- POPUP -->
+<div id="popup">
+  <img id="popupImg" class="photo" style="display:none">
+  <div id="popupMsg" class="message"></div>
+  <button onclick="closePopup()">Đóng lại 💌</button>
 </div>
 
 <div id="hearts"></div>
 <audio id="music" src="nhac.mp3" loop></audio>
 
 <script>
-function openLetter(){
-  envelope.classList.add('open');
+const contents=[
+  {type:'msg',text:'Chúc em năm mới luôn vui vẻ, bình an và hạnh phúc 🌸'},
+  {type:'img',src:'nu.jpg'},
+  {type:'msg',text:'Mong rằng chúng ta sẽ cùng nhau đi qua thật nhiều mùa xuân nữa 💖'},
+  {type:'msg',text:'Cảm ơn em đã đến bên anh và ở lại đến hôm nay 💞'}
+];
 
-  setTimeout(()=>{
-    intro.style.display='none';
-    main.style.display='flex';
-    music.play().catch(()=>{});
-  },700);
+const sky=document.getElementById('sky');
+
+// tạo nhiều lá thư
+for(let i=0;i<8;i++){
+  const l=document.createElement('div');
+  l.className='letter';
+  l.style.animationDelay=(Math.random()*4)+'s';
+  l.onclick=()=>openContent(contents[i%contents.length]);
+  sky.appendChild(l);
 }
 
-/* ===== HEART RAIN ===== */
-function heartRain(){
+function openContent(data){
+  popup.style.display='flex';
+  music.play().catch(()=>{});
+
+  popupImg.style.display='none';
+  popupMsg.innerText='';
+
+  if(data.type==='img'){
+    popupImg.src=data.src;
+    popupImg.style.display='block';
+  }else{
+    popupMsg.innerText=data.text;
+  }
+
+  startHearts();
+}
+
+function closePopup(){
+  popup.style.display='none';
+}
+
+function startHearts(){
   const h=document.createElement('div');
   h.className='heart';
   h.innerText='💗';
   h.style.left=Math.random()*100+'vw';
-  h.style.fontSize=(16+Math.random()*24)+'px';
+  h.style.fontSize=(16+Math.random()*20)+'px';
   hearts.appendChild(h);
   setTimeout(()=>h.remove(),6000);
-}
-
-/* ===== FIREWORK ===== */
-function firework(){
-  for(let i=0;i<24;i++){
-    const f=document.createElement('div');
-    f.className='fire';
-    f.style.left=window.innerWidth/2+'px';
-    f.style.top=window.innerHeight/2+'px';
-    f.style.setProperty('--x',(Math.random()*300-150)+'px');
-    f.style.setProperty('--y',(Math.random()*300-150)+'px');
-    document.body.appendChild(f);
-    setTimeout(()=>f.remove(),1000);
-  }
-}
-
-/* ===== FINAL EFFECT ===== */
-function startFinal(){
-  setInterval(heartRain,150);
-  setInterval(firework,1200);
+  setTimeout(startHearts,200);
 }
 </script>
 
