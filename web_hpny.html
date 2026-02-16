@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thiệp Chúc Tết 💌</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#0b0b0b;
+  color:#fff;
+  overflow:hidden;
+}
+
+/* ===== INTRO ENVELOPE ===== */
+#intro{
+  position:fixed; inset:0;
+  display:flex; flex-direction:column;
+  justify-content:center; align-items:center;
+  background:radial-gradient(circle at center,#ff6ea8,#12000a);
+  text-align:center;
+  z-index:10;
+}
+
+#envelope{
+  width:240px; height:160px;
+  background:#fff;
+  position:relative;
+  border-radius:8px;
+  cursor:pointer;
+  transition:transform .6s ease, box-shadow .6s;
+}
+
+#envelope:before{
+  content:"";
+  position:absolute; left:0; right:0; top:-80px;
+  border-left:120px solid transparent;
+  border-right:120px solid transparent;
+  border-bottom:80px solid #fff;
+}
+
+#envelope.open{
+  transform:scale(1.1) rotateX(25deg);
+  box-shadow:0 0 40px rgba(255,255,255,.6);
+}
+
+#hint{ margin-top:20px; opacity:.85 }
+
+/* ===== MAIN CONTENT ===== */
+#main{
+  display:none;
+  position:fixed; inset:0;
+  justify-content:center; align-items:center;
+  flex-direction:column;
+  text-align:center;
+  padding:20px;
+}
+
+.fade{ animation:fade 1.2s ease forwards }
+@keyframes fade{ from{opacity:0; transform:translateY(30px)} to{opacity:1; transform:none} }
+
+img.photo{
+  width:240px; height:240px;
+  object-fit:cover;
+  border-radius:24px;
+  box-shadow:0 0 35px #ff4da6;
+}
+
+.message{
+  margin-top:24px;
+  max-width:650px;
+  line-height:1.8;
+  font-size:20px;
+}
+
+/* ===== BUTTON ===== */
+button{
+  margin-top:34px;
+  padding:14px 32px;
+  border:none; border-radius:999px;
+  background:#ff4da6; color:#fff;
+  font-size:18px;
+  box-shadow:0 0 18px #ff4da6;
+}
+
+/* ===== HEARTS ===== */
+#hearts{ position:fixed; inset:0; pointer-events:none }
+.heart{ position:absolute; bottom:-20px; animation:fly 6s linear forwards }
+@keyframes fly{ to{ transform:translateY(-110vh); opacity:0 } }
+
+/* ===== FIREWORK ===== */
+.fire{
+  position:absolute;
+  width:6px; height:6px;
+  background:#ff4da6;
+  border-radius:50%;
+  animation:explode 1s ease-out forwards;
+}
+
+@keyframes explode{
+  to{
+    transform:translate(var(--x), var(--y));
+    opacity:0;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- INTRO -->
+<div id="intro">
+  <div id="envelope" onclick="openLetter()"></div>
+  <div id="hint">Nhấn vào phong thư để mở 💌</div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <img src="nu.jpg" class="photo fade">
+
+  <div class="message fade">
+    Chúc em một năm mới thật nhiều niềm vui, sức khỏe và hạnh phúc 🌸<br><br>
+    Mong rằng trong năm mới này, chúng ta sẽ có thêm thật nhiều kỷ niệm đẹp
+    và luôn ở bên nhau, cùng nhau đi qua mọi điều trong cuộc sống 💖
+  </div>
+
+  <button onclick="startFinal()">Anh có điều muốn nói 💗</button>
+
+</div>
+
+<div id="hearts"></div>
+<audio id="music" src="nhac.mp3" loop></audio>
+
+<script>
+function openLetter(){
+  envelope.classList.add('open');
+
+  setTimeout(()=>{
+    intro.style.display='none';
+    main.style.display='flex';
+    music.play().catch(()=>{});
+  },700);
+}
+
+/* ===== HEART RAIN ===== */
+function heartRain(){
+  const h=document.createElement('div');
+  h.className='heart';
+  h.innerText='💗';
+  h.style.left=Math.random()*100+'vw';
+  h.style.fontSize=(16+Math.random()*24)+'px';
+  hearts.appendChild(h);
+  setTimeout(()=>h.remove(),6000);
+}
+
+/* ===== FIREWORK ===== */
+function firework(){
+  for(let i=0;i<24;i++){
+    const f=document.createElement('div');
+    f.className='fire';
+    f.style.left=window.innerWidth/2+'px';
+    f.style.top=window.innerHeight/2+'px';
+    f.style.setProperty('--x',(Math.random()*300-150)+'px');
+    f.style.setProperty('--y',(Math.random()*300-150)+'px');
+    document.body.appendChild(f);
+    setTimeout(()=>f.remove(),1000);
+  }
+}
+
+/* ===== FINAL EFFECT ===== */
+function startFinal(){
+  setInterval(heartRain,150);
+  setInterval(firework,1200);
+}
+</script>
+
+</body>
+</html>
